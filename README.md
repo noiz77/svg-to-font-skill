@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README.zh.md)
+
 # svg-to-font — Claude Code Skill
 
 A Claude Code skill that turns a folder of SVG glyph files into a complete, production-ready font package: **OTF desktop font**, **WOFF2 web font**, **CSS icon classes**, and an **interactive HTML preview page** — all in one command.

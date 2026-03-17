@@ -1,3 +1,5 @@
+[English](README.md) | [中文](README.zh.md)
+
 # svg-to-font — Claude Code 技能
 
 一个 Claude Code 技能，将一组 SVG 字形文件转换为完整的、可投入生产的字体包：**OTF 桌面字体**、**WOFF2 网络字体**、**CSS 图标类** 以及**交互式 HTML 预览页面** —— 一条命令全部完成。
