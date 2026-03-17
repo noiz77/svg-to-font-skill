@@ -1,4 +1,4 @@
-[English](README.md) | [中文](README.zh.md)
+[中文](README.zh.md)
 
 # svg-to-font — Claude Code Skill
 
