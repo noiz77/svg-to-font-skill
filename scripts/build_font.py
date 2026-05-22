@@ -56,6 +56,14 @@ def get_svg_filename(prefix, char):
     return f"{prefix}-{name}.svg" if name else None
 
 
+def extract_icon_char(key, prefix):
+    """Extract the literal character from a config key like "{prefix}-a"."""
+    expected = f"{prefix}-"
+    if not key.startswith(expected):
+        raise ValueError(f"Icon key '{key}' must start with '{expected}'")
+    return key[len(expected):]
+
+
 def make_glyph_name(char, pua_code):
     """
     Return (glyph_name, unicode_codepoint).
@@ -103,11 +111,13 @@ def build(config_path, svg_dir, out_dir, font_name, family_name,
           version, vendor_id, side_bearing, scale, ascender, descender):
 
     with open(config_path) as f:
-        icons = json.load(f)['icons']
+        config = json.load(f)
+    icons = config['icons']
+    if not icons:
+        raise ValueError("Config must contain at least one icon")
 
-    # The prefix is the part before the first '-' in any key, e.g. "my" from "my-a"
-    first_key = next(iter(icons))
-    prefix = first_key.split('-')[0]
+    # Use the config name as the SVG/key prefix so hyphenated font names work.
+    prefix = config.get('name') or font_name
 
     os.makedirs(os.path.join(out_dir, 'fonts'), exist_ok=True)
 
@@ -129,13 +139,18 @@ def build(config_path, svg_dir, out_dir, font_name, family_name,
     metrics['space'] = (300, 0)
 
     for key, pua_hex in icons.items():
-        # key is like "my-a" or "my-A" — extract the actual character after the prefix
-        char = key[len(prefix) + 1:]
+        # key is like "my-font-a" or "my-font-A" — extract the literal character.
+        char = extract_icon_char(key, prefix)
         pua_code = int(pua_hex, 16)
         gname, std_code = make_glyph_name(char, pua_code)
 
-        svg_fp = os.path.join(svg_dir, get_svg_filename(prefix, char) or '')
-        if not os.path.exists(svg_fp):
+        svg_name = get_svg_filename(prefix, char)
+        if not svg_name:
+            print(f"  [SKIP] Unsupported character in config key: {key}")
+            continue
+
+        svg_fp = os.path.join(svg_dir, svg_name)
+        if not os.path.isfile(svg_fp):
             print(f"  [SKIP] Not found: {svg_fp}")
             continue
 

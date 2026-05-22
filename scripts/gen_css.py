@@ -20,20 +20,26 @@ def css_escape(name):
     return re.sub(r'([^a-zA-Z0-9_-])', r'\\\1', name)
 
 
+def css_string(value):
+    """Escape a value for use inside a single-quoted CSS string."""
+    return value.replace('\\', '\\\\').replace("'", "\\'")
+
+
 def generate(config_path, out_dir, font_name, family_name):
     with open(config_path) as f:
         icons = json.load(f)['icons']
 
+    family_css = css_string(family_name)
     lines = [
         f"@font-face {{",
-        f"  font-family: '{family_name}';",
+        f"  font-family: '{family_css}';",
         f"  /* WOFF2: modern browsers (preferred); OTF: local fallback */",
         f"  src: url('../fonts/{font_name}.woff2') format('woff2'),",
         f"       url('../fonts/{font_name}.otf') format('opentype');",
         f"}}",
         f"",
         f".{font_name} {{",
-        f"  font-family: '{family_name}' !important;",
+        f"  font-family: '{family_css}' !important;",
         f"  font-style: normal;",
         f"  -webkit-font-smoothing: antialiased;",
         f"  -moz-osx-font-smoothing: grayscale;",

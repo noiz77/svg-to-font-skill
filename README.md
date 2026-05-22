@@ -1,8 +1,8 @@
- English ｜ [中文](README.zh.md)
+English ｜ [中文](README.zh.md)
 
-# svg-to-font — Claude Code Skill
+# svg-to-font — Agent Skill
 
-A Claude Code skill that turns a folder of SVG glyph files into a complete, production-ready font package: **OTF desktop font**, **WOFF2 web font**, **CSS icon classes**, and an **interactive HTML preview page** — all in one command.
+An agent-agnostic skill that turns a folder of SVG glyph files into a complete, production-ready font package: **OTF desktop font**, **WOFF2 web font**, **CSS icon classes**, and an **interactive HTML preview page**.
 
 ## How to Create Your Own SVG Glyphs
 
@@ -46,13 +46,13 @@ White background, black letterforms.
 
 ## What the Skill Does
 
-Tell Claude something like:
+Tell your coding agent something like:
 
 - "Make a font from these SVGs"
 - "Convert my SVG glyphs into an icon font"
 - "Build an OTF and WOFF2 from the files in `./svg`"
 
-Claude will guide you through naming conventions and config, then run the bundled Python scripts to produce:
+The agent will guide you through naming conventions and config, then run the bundled Python scripts to produce:
 
 ```
 output/
@@ -66,23 +66,57 @@ output/
 
 ## Installation
 
-Clone the repository directly into Claude's skills directory:
+Install this repository into the skill directory or skill manager used by your agent.
+
+### Recommended
+
+Use your agent's skill installer if it supports installing from GitHub.
+
+For Codex, you can ask Codex to use `$skill-installer` to install this repository.
+
+### Manual Install
+
+Clone the repository into your agent's skill search path:
 
 ```bash
+git clone https://github.com/noiz77/svg-to-font-skill.git <your-agent-skills-dir>/svg-to-font
+```
+
+Common examples:
+
+```bash
+# Codex
+git clone https://github.com/noiz77/svg-to-font-skill.git ~/.codex/skills/svg-to-font
+
+# Claude Code
 git clone https://github.com/noiz77/svg-to-font-skill.git ~/.claude/skills/svg-to-font
 ```
+
+If your agent uses a different directory, replace `<your-agent-skills-dir>` with that path.
 
 Then install the required Python dependencies:
 
 ```bash
-pip install fonttools brotli
+python3 -m pip install fonttools brotli
 ```
 
-That's it. The skill activates automatically the next time you start Claude Code.
+Restart or reload your agent so it can discover the skill.
 
 ## Uninstall
 
+Remove the installed skill folder from the directory where you installed it:
+
 ```bash
+rm -rf <your-agent-skills-dir>/svg-to-font
+```
+
+Common examples:
+
+```bash
+# Codex
+rm -rf ~/.codex/skills/svg-to-font
+
+# Claude Code
 rm -rf ~/.claude/skills/svg-to-font
 ```
 
@@ -90,7 +124,7 @@ rm -rf ~/.claude/skills/svg-to-font
 
 - Python 3.8+
 - `fonttools` and `brotli` Python packages
-- Claude Code
+- A coding agent or terminal environment that can run Python scripts
 
 ## License
 

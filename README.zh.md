@@ -1,8 +1,8 @@
 [English](README.md) ｜ 中文
 
-# svg-to-font — Claude Code 技能
+# svg-to-font — Agent Skill
 
-一个 Claude Code 技能，将一组 SVG 字形文件转换为完整的、可投入生产的字体包：**OTF 桌面字体**、**WOFF2 网络字体**、**CSS 图标类** 以及**交互式 HTML 预览页面** —— 一条命令全部完成。
+一个通用的 AI coding agent 技能，将一组 SVG 字形文件转换为完整的、可投入生产的字体包：**OTF 桌面字体**、**WOFF2 网络字体**、**CSS 图标类** 以及**交互式 HTML 预览页面**。
 
 ## 如何制作自己的 SVG 字体？
 
@@ -46,13 +46,13 @@
 
 ## SKILL 功能介绍
 
-向 Claude 发出如下指令：
+向你的 coding agent 发出如下指令：
 
 - "用这些 SVG 生成一个字体"
 - "把我的 SVG 字形转换成图标字体"
 - "从 `./svg` 目录中的文件生成 OTF 和 WOFF2"
 
-Claude 会引导你完成命名规范和配置，然后运行内置的 Python 脚本，生成以下文件：
+Agent 会引导你完成命名规范和配置，然后运行内置的 Python 脚本，生成以下文件：
 
 ```
 output/
@@ -66,23 +66,57 @@ output/
 
 ## 安装
 
-将仓库直接克隆到 Claude 的技能目录：
+请将本仓库安装到你所使用 agent 的 skill 目录，或使用该 agent 提供的 skill 安装器。
+
+### 推荐方式
+
+如果你的 agent 支持从 GitHub 安装 skill，优先使用它的安装器。
+
+对于 Codex，你可以让 Codex 使用 `$skill-installer` 安装这个仓库。
+
+### 手动安装
+
+将仓库克隆到你的 agent skill 搜索路径：
 
 ```bash
+git clone https://github.com/noiz77/svg-to-font-skill.git <your-agent-skills-dir>/svg-to-font
+```
+
+常见示例：
+
+```bash
+# Codex
+git clone https://github.com/noiz77/svg-to-font-skill.git ~/.codex/skills/svg-to-font
+
+# Claude Code
 git clone https://github.com/noiz77/svg-to-font-skill.git ~/.claude/skills/svg-to-font
 ```
+
+如果你的 agent 使用其他目录，请将 `<your-agent-skills-dir>` 替换成对应路径。
 
 然后安装所需的 Python 依赖：
 
 ```bash
-pip install fonttools brotli
+python3 -m pip install fonttools brotli
 ```
 
-完成。下次启动 Claude Code 时，该技能会自动激活。
+重启或重新加载你的 agent 后，该技能即可被发现。
 
 ## 卸载
 
+从你安装时使用的目录中删除该 skill 文件夹：
+
 ```bash
+rm -rf <your-agent-skills-dir>/svg-to-font
+```
+
+常见示例：
+
+```bash
+# Codex
+rm -rf ~/.codex/skills/svg-to-font
+
+# Claude Code
 rm -rf ~/.claude/skills/svg-to-font
 ```
 
@@ -90,7 +124,7 @@ rm -rf ~/.claude/skills/svg-to-font
 
 - Python 3.8+
 - `fonttools` 和 `brotli` Python 包
-- Claude Code
+- 可以运行 Python 脚本的 coding agent 或终端环境
 
 ## 许可证
 

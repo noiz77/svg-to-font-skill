@@ -17,23 +17,39 @@ Usage:
 import os
 import json
 import argparse
+import html
+
+
+def extract_icon_char(key, prefix):
+    """Extract the literal character from a config key like "{prefix}-a"."""
+    expected = f"{prefix}-"
+    if not key.startswith(expected):
+        raise ValueError(f"Icon key '{key}' must start with '{expected}'")
+    return key[len(expected):]
+
+
+def css_string(value):
+    """Escape a value for use inside a single-quoted CSS string."""
+    return value.replace('\\', '\\\\').replace("'", "\\'")
 
 
 def generate(config_path, out_dir, font_name, family_name):
     with open(config_path) as f:
-        icons = json.load(f)['icons']
+        config = json.load(f)
+    icons = config['icons']
+    prefix = config.get('name') or font_name
+    family_html = html.escape(family_name)
+    family_css = css_string(family_name)
 
     items_html = ''
     for key, pua_hex in icons.items():
-        # Extract the display character — the part after the first '-'
-        char = key.split('-', 1)[-1]
+        # Extract the display character after the configured prefix.
+        char = extract_icon_char(key, prefix)
         if char == ' ':
             display = 'space'
         else:
-            # Escape < > so they render correctly in HTML
-            display = char.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        # Escape the key itself for use in HTML attributes
-        safe_key = key.replace('"', '&quot;')
+            display = html.escape(char)
+        safe_key = html.escape(key, quote=True)
 
         items_html += f'''\
       <div class="item">
@@ -43,12 +59,12 @@ def generate(config_path, out_dir, font_name, family_name):
       </div>
 '''
 
-    html = f'''\
+    html_doc = f'''\
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{family_name} — Font Preview</title>
+  <title>{family_html} — Font Preview</title>
   <link rel="stylesheet" href="css/{font_name}.css">
   <style>
     *, *::before, *::after {{ box-sizing: border-box; }}
@@ -74,7 +90,7 @@ def generate(config_path, out_dir, font_name, family_name):
     }}
     /* Typing demo */
     .type-demo input {{
-      font-family: '{family_name}', sans-serif;
+      font-family: '{family_css}', sans-serif;
       font-size: 2em; width: 100%; padding: 12px;
       border: 1px solid #ccc; border-radius: 6px;
       background: #fff; outline: none;
@@ -83,7 +99,7 @@ def generate(config_path, out_dir, font_name, family_name):
   </style>
 </head>
 <body>
-  <h1>{family_name}</h1>
+  <h1>{family_html}</h1>
 
   <div class="section">
     <h2>Live Typing (Standard Unicode)</h2>
@@ -104,8 +120,9 @@ def generate(config_path, out_dir, font_name, family_name):
 '''
 
     html_path = os.path.join(out_dir, f"{font_name}.html")
+    os.makedirs(out_dir, exist_ok=True)
     with open(html_path, 'w') as f:
-        f.write(html)
+        f.write(html_doc)
     print(f"HTML → {html_path}")
 
 

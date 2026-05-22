@@ -1,1 +1,29 @@
+# macOS
 .DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Generated font package output
+fonts/
+css/
+output/
+dist/
+build/
+/*.html
+*.otf
+*.ttf
+*.woff
+*.woff2
+
+# Local logs and temporary files
+*.log
+*.tmp

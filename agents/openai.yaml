@@ -1,0 +1,4 @@
+interface:
+  display_name: "SVG to Font"
+  short_description: "Build OTF, WOFF2, CSS, and previews from SVGs"
+  default_prompt: "Use $svg-to-font to turn my SVG glyph folder into an OTF, WOFF2, CSS, and HTML preview package."

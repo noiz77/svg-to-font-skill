@@ -1,6 +1,6 @@
 ---
 name: svg-to-font
-description: Build a production-ready font package (OTF + WOFF2 + CSS + HTML preview) from a set of SVG glyph files. Use this skill whenever the user mentions making a font from SVGs, converting SVG glyphs to a typeface, building an icon font, generating OTF or WOFF2 files, or provides a folder of SVG files and asks to turn them into a usable font. Even if the user just says "make a font" or "package these SVGs", use this skill.
+description: 'Build a production-ready font package (OTF + WOFF2 + CSS + HTML preview) from a set of SVG glyph files. Use this skill whenever the user mentions making a font from SVGs, converting SVG glyphs to a typeface, building an icon font, generating OTF or WOFF2 files, or provides a folder of SVG files and asks to turn them into a usable font. Even if the user just says "make a font" or "package these SVGs", use this skill. This is an agent-agnostic skill: run the bundled Python scripts from this skill directory regardless of whether the calling agent is Codex, Claude Code, or another coding agent.'
 ---
 
 # SVG → Font Package Builder
@@ -11,13 +11,13 @@ This skill turns a set of SVG glyph files into a complete, installable font pack
 
 ## Step 1: Gather Required Information
 
-Before doing anything else, collect the four required inputs. Infer what you can from context (open files, project structure); ask the user only for what's genuinely missing.
+Before doing anything else, collect the five required inputs. Infer what you can from context (open files, project structure); ask the user only for what's genuinely missing.
 
 | Input | Description | Example |
 |---|---|---|
 | `svg_dir` | Folder containing all glyph SVGs | `./svg` |
 | `config_json` | JSON mapping icon names → PUA hex codes | `./my-font.json` |
-| `font_name` | Short identifier, used for filenames | `my-font` |
+| `font_name` | Short identifier, used for filenames and as the config/SVG prefix | `my-font` |
 | `family_name` | Display name shown in font menus | `My Font` |
 | `out_dir` | Root folder for all output files | `./` |
 
@@ -29,15 +29,15 @@ The output directory will receive `fonts/`, `css/`, and `{font_name}.html` as su
 
 Check that the SVG files follow PostScript-safe naming rules. SVG filenames cannot use raw special characters or capital letters (macOS filesystems are case-insensitive, which would silently overwrite lowercase glyphs).
 
-**Required naming pattern: `{prefix}-{safe_name}.svg`**
+**Required naming pattern: `{font_name}-{safe_name}.svg`**
 
 | Character type | Rule | Example |
 |---|---|---|
-| Lowercase letter | `{prefix}-{char}.svg` | `my-a.svg` |
-| **Uppercase letter** | `{prefix}-{char}_upper.svg` | `my-A_upper.svg` |
-| Digit | `{prefix}-{char}.svg` | `my-0.svg` |
-| Special symbol | `{prefix}-{english_name}.svg` | `my-question.svg` |
-| Space | `{prefix}-space.svg` | `my-space.svg` |
+| Lowercase letter | `{font_name}-{char}.svg` | `my-font-a.svg` |
+| **Uppercase letter** | `{font_name}-{char}_upper.svg` | `my-font-A_upper.svg` |
+| Digit | `{font_name}-{char}.svg` | `my-font-0.svg` |
+| Special symbol | `{font_name}-{english_name}.svg` | `my-font-question.svg` |
+| Space | `{font_name}-space.svg` | `my-font-space.svg` |
 
 **Symbol name reference:**
 ```
@@ -74,6 +74,7 @@ The config JSON maps each icon name to a unique PUA (Private Use Area) code poin
 - Icon key format: `{font_name}-{char}` where `{char}` is the literal character (not the safe name)
 - PUA codes: start at `ea01`, increment by 1 per glyph, no duplicates
 - Every SVG that should appear in the font needs an entry
+- The top-level `"name"` should match `font_name`; scripts use it to parse keys and find SVG files
 
 ---
 
@@ -82,7 +83,7 @@ The config JSON maps each icon name to a unique PUA (Private Use Area) code poin
 Check whether `fonttools` and `brotli` are available, then install if missing. Both are required — `fonttools` drives all font construction, and `brotli` is the compression engine for WOFF2.
 
 ```bash
-pip install fonttools brotli
+python3 -m pip install fonttools brotli
 ```
 
 ---
@@ -92,7 +93,8 @@ pip install fonttools brotli
 Run the build script with the gathered parameters:
 
 ```bash
-_S2F_SCRIPTS="$HOME/.claude/skills/svg-to-font/scripts"
+_S2F_SKILL_DIR="/path/to/svg-to-font"
+_S2F_SCRIPTS="$_S2F_SKILL_DIR/scripts"
 python "$_S2F_SCRIPTS/build_font.py" \
   --config   {config_json} \
   --svg-dir  {svg_dir} \
@@ -108,7 +110,8 @@ The script will print `Baseline shift: X.XX` (the auto-detected vertical alignme
 ## Step 6: Generate CSS
 
 ```bash
-_S2F_SCRIPTS="$HOME/.claude/skills/svg-to-font/scripts"
+_S2F_SKILL_DIR="/path/to/svg-to-font"
+_S2F_SCRIPTS="$_S2F_SKILL_DIR/scripts"
 python "$_S2F_SCRIPTS/gen_css.py" \
   --config   {config_json} \
   --out-dir  {out_dir} \
@@ -123,7 +126,8 @@ Outputs `{out_dir}/css/{font_name}.css` containing the `@font-face` declaration 
 ## Step 7: Generate HTML Preview
 
 ```bash
-_S2F_SCRIPTS="$HOME/.claude/skills/svg-to-font/scripts"
+_S2F_SKILL_DIR="/path/to/svg-to-font"
+_S2F_SCRIPTS="$_S2F_SKILL_DIR/scripts"
 python "$_S2F_SCRIPTS/gen_html.py" \
   --config   {config_json} \
   --out-dir  {out_dir} \
@@ -137,9 +141,7 @@ Outputs `{out_dir}/{font_name}.html` — an interactive page with a live typing 
 
 ## Step 8: Open and Verify
 
-```bash
-open {out_dir}/{font_name}.html
-```
+Open `{out_dir}/{font_name}.html` in an available browser or use the agent's browser/preview tool when one is available.
 
 Ask the user to check:
 - Do all glyphs render (nothing blank or filled solid black)?
