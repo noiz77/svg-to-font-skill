@@ -17,7 +17,15 @@ If you don't have SVG glyph files yet, you can use a **text-to-image model** (re
 Reference image + prompt:
 
 ```
-Based on the design style of this font, create a complete English typeface including: a–z, A–Z, 0–9, and special characters. Arrange in order: all lowercase, all uppercase, then special characters.
+Design a western typeface based on the most prominent font characteristics in the reference image.
+Design priorities: stable proportions, unified stroke logic, balanced negative space,
+comfortable letter spacing, and refined optical compensation.
+
+The final output must include the following characters:
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+0123456789
+` ~ ! @ # $ % ^ & * ( ) - _ = + [ ] { } \ | ; : ' " , . < > / ?
 ```
 
 #### Option B: No reference image
@@ -27,9 +35,19 @@ Based on the design style of this font, create a complete English typeface inclu
 Describe the style in your prompt:
 
 ```
-Design a typewriter-style English font.
-Include: a–z, A–Z, 0–9, and special characters. Arrange in order: all lowercase, all uppercase, 0–9, then special characters.
-White background, black letterforms.
+Design a printer-style western typeface.
+
+Design priorities: stable proportions, unified stroke logic, balanced negative space,
+comfortable letter spacing, and refined optical compensation.
+
+Keep a white background and black letterforms.
+Leave enough spacing between every character.
+
+The final output must include the following characters:
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+0123456789
+` ~ ! @ # $ % ^ & * ( ) - _ = + [ ] { } \ | ; : ' " , . < > / ?
 ```
 
 > The generated image may have duplicate or missing characters. Regenerate if needed, or make manual adjustments afterward.
